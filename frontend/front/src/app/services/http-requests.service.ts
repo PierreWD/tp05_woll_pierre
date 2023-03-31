@@ -14,21 +14,21 @@ export class HttpRequestsService {
     const formData = new FormData();
     formData.append('login', login);
     formData.append('pass', password);
-    return this.httpClient.post<any> ("http://localhost:8081/api/login",formData);
+    return this.httpClient.post<any> ("https://tp05-woll-pierre.onrender.com/api/login",formData);
   }
 
   public GetUsers(): Observable<any>{
     //Api_httpInterceptor.jwtToken="eyJhbGciOiJIUzI1NiJ9.e30.ECFeffV1yM9iD8t7d3YA_xytwbz8QS-DoG0-KtKnYQo";
-    return this.httpClient.get<any> ("http://localhost:8081/api/user");
+    return this.httpClient.get<any> ("https://tp05-woll-pierre.onrender.com/api/user");
   } 
 
   public GetCatalogue(): Observable<any>{
     //Api_httpInterceptor.jwtToken="eyJhbGciOiJIUzI1NiJ9.e30.ECFeffV1yM9iD8t7d3YA_xytwbz8QS-DoG0-KtKnYQo";
-    return this.httpClient.get<any> (`http://localhost:8081/api/catalogue`);
+    return this.httpClient.get<any> (`https://tp05-woll-pierre.onrender.com/api/catalogue`);
   } 
 
   public Hello(name:string): Observable<any>{
-    return this.httpClient.get<any> (`http://localhost:8081/api/hello/${name}`);
+    return this.httpClient.get<any> (`https://tp05-woll-pierre.onrender.com/api/hello/${name}`);
   } 
 
 }
