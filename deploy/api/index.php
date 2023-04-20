@@ -74,11 +74,11 @@ $app->get('/api/user', function (Request $request, Response $response, $args) {
     } else {
         $response = $response->withStatus(401);
     }
-    return $response;
+    //return $response;
 
     //$data = array('nom' => 'toto', 'prenom' => 'titi','adresse' => '6 rue des fleurs', 'tel' => '0606060607');
     //$response->getBody()->write(json_encode($data));
-    //return addHeaders($response);
+    return addHeaders($response);
 });
 
 $app->options('/api/login', function (Request $request, Response $response, $args) {
