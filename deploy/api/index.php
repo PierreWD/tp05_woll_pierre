@@ -64,7 +64,7 @@ $app->get('/api/user', function (Request $request, Response $response, $args) {
     $payload = getJWTToken($request);
     $login  = $payload->userid;
     
-    $utilisateurRepository = $entityManager->getRepository('Utilisateur');
+    $utilisateurRepository = $entityManager->getRepository('utilisateur');
     $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login));
     if ($utilisateur) {
         $data = array('nom' => $utilisateur->getNom(), 'prenom' => $utilisateur->getPrenom());
@@ -102,7 +102,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     }
 
     if (!$err) {
-        $utilisateurRepository = $entityManager->getRepository('Utilisateur');
+        $utilisateurRepository = $entityManager->getRepository('utilisateur');
         $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login, 'password' => $pass));
         if ($utilisateur and $login == $utilisateur->getLogin() and $pass == $utilisateur->getPassword()) {
             $response = addHeaders($response);
