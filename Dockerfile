@@ -51,7 +51,6 @@ RUN composer update
 # Exposer le port 80 pour permettre les connexions entrantes
 EXPOSE 80
 
-EXPOSE 81
 
 # Définir l'entrée de l'application
 CMD ["apache2-foreground"]

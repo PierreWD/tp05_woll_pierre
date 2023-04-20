@@ -2,6 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+
 use Tuupola\Middleware\HttpBasicAuthentication;
 use \Firebase\JWT\JWT;
 require __DIR__ . '/../vendor/autoload.php';
@@ -58,9 +59,26 @@ $app->options('/api/user', function (Request $request, Response $response, $args
 });
 
 $app->get('/api/user', function (Request $request, Response $response, $args) {   
-    $data = array('nom' => 'toto', 'prenom' => 'titi','adresse' => '6 rue des fleurs', 'tel' => '0606060607');
-    $response->getBody()->write(json_encode($data));
-    return addHeaders($response);
+    global $entityManager;
+    
+    $payload = getJWTToken($request);
+    $login  = $payload->userid;
+    
+    $utilisateurRepository = $entityManager->getRepository('Utilisateur');
+    $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login));
+    if ($utilisateur) {
+        $data = array('nom' => $utilisateur->getNom(), 'prenom' => $utilisateur->getPrenom());
+        $response = addHeaders($response);
+        $response = createJwT($response);
+        $response->getBody()->write(json_encode($data));
+    } else {
+        $response = $response->withStatus(401);
+    }
+    return $response;
+
+    //$data = array('nom' => 'toto', 'prenom' => 'titi','adresse' => '6 rue des fleurs', 'tel' => '0606060607');
+    //$response->getBody()->write(json_encode($data));
+    //return addHeaders($response);
 });
 
 $app->options('/api/login', function (Request $request, Response $response, $args) {
@@ -69,7 +87,8 @@ $app->options('/api/login', function (Request $request, Response $response, $arg
 });
 
 // APi d'authentification générant un JWT
-$app->post('/api/login', function (Request $request, Response $response, $args) {   
+$app->post('/api/login', function (Request $request, Response $response, $args) { 
+    global $entityManager;  
     $err=false;
     $body = $request->getParsedBody();
     $login = $body ['login'] ?? "";
@@ -83,12 +102,19 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     }
 
     if (!$err) {
+        $utilisateurRepository = $entityManager->getRepository('Utilisateur');
+        $utilisateur = $utilisateurRepository->findOneBy(array('login' => $login, 'password' => $pass));
+        if ($utilisateur and $login == $utilisateur->getLogin() and $pass == $utilisateur->getPassword()) {
+            $response = addHeaders($response);
             $response = createJwT($response);
-            $data = array('nom' => 'toto', 'prenom' => 'titi','jwt'=>$GLOBALS['jwt']);
+            $data = array('nom' => $utilisateur->getNom(), 'prenom' => $utilisateur->getPrenom());
             $response->getBody()->write(json_encode($data));
-     } else {          
+        } else {          
             $response = $response->withStatus(401);
-     }
+        }
+    } else {          
+        $response = $response->withStatus(401);
+    }
     return addHeaders($response);
 });
 
